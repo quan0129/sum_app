@@ -1,0 +1,31 @@
+name: Build fat-jar
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "11"
+
+      - name: Set up Coursier (sbt)
+        uses: coursier/setup-action@v1
+
+      - name: sbt assembly
+        run: sbt -no-colors clean assembly
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sum-app-assembly
+          path: target/scala-2.12/*assembly*.jar
